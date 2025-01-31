@@ -1,20 +1,19 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import Img from "react-cool-img"
 
 import { CircularProgress, Modal } from "@mui/material"
 
 import useCheckViewport from "@/hooks/useCheckViewport"
 
-const ImageViewer = props => {
-  const { src, alt, imageStyle, onClose, ...restProps } = props
+const ImageViewer = ({ src, alt, imageStyle, onClose, ...restProps }) => {
   const { isMobile } = useCheckViewport()
   const [style, setStyle] = useState({})
   const [loading, setLoading] = useState(true)
 
+  // Close modal on Escape key press
   useEffect(() => {
-    // TODO: modal is supposed to handle eacape listening by default
     const handleEscape = e => {
       if (e.key === "Escape") {
         handleClose()
@@ -26,9 +25,10 @@ const ImageViewer = props => {
     }
   }, [])
 
+  // Adjust image size based on aspect ratio and viewport
   useEffect(() => {
     const handleAdjustImage = () => {
-      if (imageStyle && imageStyle.aspectRatio && window.innerWidth / window.innerHeight > imageStyle.aspectRatio) {
+      if (imageStyle?.aspectRatio && window.innerWidth / window.innerHeight > imageStyle.aspectRatio) {
         setStyle({ height: `calc(100% - ${isMobile ? "2rem" : "10rem"})` })
       } else {
         setStyle({ width: `calc(100% - ${isMobile ? "2rem" : "10rem"})` })
@@ -38,23 +38,29 @@ const ImageViewer = props => {
 
     window.addEventListener("resize", handleAdjustImage)
     return () => {
-      window.addEventListener("resize", handleAdjustImage)
+      window.removeEventListener("resize", handleAdjustImage) // Fixed cleanup
     }
   }, [imageStyle, isMobile])
 
-  const handleLoad = () => {
-    setLoading(false)
-  }
-
-  const handleClose = () => {
+  // Handle modal close and reset loading state
+  const handleClose = useCallback(() => {
     setLoading(true)
     onClose()
-  }
+  }, [onClose])
 
   return (
-    <Modal sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: "4rem" }} onClose={handleClose} {...restProps}>
+    <Modal
+      sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: "4rem" }}
+      onClose={handleClose}
+      {...restProps}
+    >
       <>
-        <Img src={src} alt={alt} style={{ display: loading ? "none" : "inline-block", ...style }} onLoad={handleLoad}></Img>
+        <Img
+          src={src}
+          alt={alt}
+          style={{ display: loading ? "none" : "inline-block", ...style }}
+          onLoad={() => setLoading(false)}
+        />
         {loading && <CircularProgress size={isMobile ? 36 : 50} />}
       </>
     </Modal>
