@@ -6,21 +6,19 @@ import Finalists from "./Finalists"
 import Header from "./Header"
 
 export const generateMetadata = genMeta(() => ({
-  titleSuffix: "Scroll Sticker Vote",
-  relativeURL: "/sticker-vote",
-  description: "Vote for your favourite sticker designs.",
-  ogImg: "/og_sticker_vote.png",
-  twitterImg: "/twitter_sticker_vote.png",
+  titleSuffix: "Scroll Sticker Winners",
+  relativeURL: "/sticker-winners",
+  description: "Congratulations to the winners of the sticker contest.",
 }))
 
 const StickerContest = () => {
-  if (process.env.NEXT_PUBLIC_SCROLL_ENVIRONMENT === "Sepolia") {
-    notFound()
-  }
+  const isSepolia = process.env.NEXT_PUBLIC_SCROLL_ENVIRONMENT === "Sepolia"
+  if (isSepolia) notFound()
+
   return (
     <>
-      <Header></Header>
-      <Finalists></Finalists>
+      <Header />
+      <Finalists />
     </>
   )
 }
