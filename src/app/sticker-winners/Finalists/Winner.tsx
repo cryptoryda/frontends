@@ -35,25 +35,27 @@ const useStyles = makeStyles()(theme => ({
   },
 }))
 
-const Winner = props => {
-  const {
-    data: { author, images, bg },
-  } = props
+const Winner = ({ data }) => {
+  const { author, images, bg } = data
   const { classes } = useStyles()
   const { isMobile } = useCheckViewport()
-  const [image, setImage] = useState<{ src?: string; alt?: string; style?: object }>({})
+  const [image, setImage] = useState({ src: "", alt: "", style: {} })
 
-  const handleViewImage = value => {
-    setImage(value)
-  }
-  const handleClose = () => {
-    setImage({})
-  }
+  const handleViewImage = (value) => setImage(value)
+  const handleClose = () => setImage({ src: "", alt: "", style: {} })
 
   return (
     <>
       <Stack direction="column" sx={{ width: "100%" }} alignItems="center">
-        <Typography sx={{ fontSize: ["2rem", "3.2rem"], lineHeight: ["3.2rem", "4rem"], fontWeight: 600, mb: "1.6rem", textAlign: "center" }}>
+        <Typography
+          sx={{
+            fontSize: ["2rem", "3.2rem"],
+            lineHeight: ["3.2rem", "4rem"],
+            fontWeight: 600,
+            mb: "1.6rem",
+            textAlign: "center",
+          }}
+        >
           Finalist - {author}
         </Typography>
         <SuccessionToView className={classes.flex} threshold={isMobile ? 0 : 0.1}>
@@ -64,12 +66,18 @@ const Winner = props => {
                 alt={`${author}-${index}`}
                 bgColor={Array.isArray(bg) ? bg[index] : bg}
                 onClick={handleViewImage}
-              ></StickerPicture>
+              />
             </SuccessionItem>
           ))}
         </SuccessionToView>
       </Stack>
-      <ImageViewer src={image.src} alt={image.alt} imageStyle={image.style} open={!!image.src} onClose={handleClose}></ImageViewer>
+      <ImageViewer
+        src={image.src}
+        alt={image.alt}
+        imageStyle={image.style}
+        open={Boolean(image.src)}
+        onClose={handleClose}
+      />
     </>
   )
 }
